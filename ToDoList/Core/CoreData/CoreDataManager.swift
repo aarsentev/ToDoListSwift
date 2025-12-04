@@ -71,7 +71,7 @@ final class CoreDataManager {
         }
     }
     
-    func saveTodos(_ entities: [ToDoEntity], completion: @escaping (Result<Void, Error>) -> Void) {
+    func saveToDos(_ entities: [ToDoEntity], completion: @escaping (Result<Void, Error>) -> Void) {
         backgroundContext.perform { [weak self] in
             guard let self = self else { return }
             
