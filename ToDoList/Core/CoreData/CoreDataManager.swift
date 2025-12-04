@@ -71,6 +71,32 @@ final class CoreDataManager {
         }
     }
     
+    func saveTodos(_ entities: [ToDoEntity], completion: @escaping (Result<Void, Error>) -> Void) {
+        backgroundContext.perform { [weak self] in
+            guard let self = self else { return }
+            
+            for entity in entities {
+                let item = ToDoItem(context: self.backgroundContext)
+                item.id = Int32(entity.id)
+                item.todo = entity.todo
+                item.completed = entity.completed
+                item.userId = Int32(entity.userId)
+                item.createdDate = entity.createdDate
+            }
+            
+            do {
+                try self.backgroundContext.save()
+                DispatchQueue.main.async {
+                    completion(.success(()))
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    completion(.failure(error))
+                }
+            }
+        }
+    }
+    
     private func convertToEntity(_ item: NSManagedObject) -> ToDoEntity? {
         guard let id = item.value(forKey: "id") as? Int32,
               let todo = item.value(forKey: "todo") as? String,
