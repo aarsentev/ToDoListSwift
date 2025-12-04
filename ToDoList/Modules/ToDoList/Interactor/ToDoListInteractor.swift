@@ -23,8 +23,9 @@ final class ToDoListInteractor: ToDoListInteractorProtocol {
     }
     
     func loadToDos(completion: @escaping (Result<[ToDoEntity], Error>) -> Void) {
-        checkIfFirstRun()
-        coreDataManager.fetchAllTodos(completion: completion)
+        checkIfFirstRun { [weak self] in
+            self?.coreDataManager.fetchAllTodos(completion: completion)
+        }
     }
     
     func searchToDos(query: String, completion: @escaping (Result<[ToDoEntity], Error>) -> Void) {
@@ -35,20 +36,35 @@ final class ToDoListInteractor: ToDoListInteractorProtocol {
         coreDataManager.searchTodos(query: query, completion: completion)
     }
     
-    private func checkIfFirstRun() {
+    private func checkIfFirstRun(completion: @escaping () -> Void) {
         let defaults = UserDefaults.standard
         let key = AppConfiguration.UserDefaultsKeys.isFirstLaunchCompleted
         
-        guard !defaults.bool(forKey: key) else { return }
+        guard !defaults.bool(forKey: key) else {
+            print("[ToDoListInteractor] Not first run, using CoreData")
+            completion()
+            return
+        }
         
+        print("[ToDoListInteractor] First run detected, loading from API")
         apiService.fetchTodos { [weak self] result in
             switch result {
             case .success(let todos):
-                self?.coreDataManager.saveToDos(todos) { _ in
-                    defaults.set(true, forKey: key)
+                self?.coreDataManager.saveToDos(todos) { saveResult in
+                    switch saveResult {
+                    case .success:
+                        print("[ToDoListInteractor] Successfully saved todos to CoreData")
+                        defaults.set(true, forKey: key)
+                        completion()
+                    case .failure(let error):
+                        print("[ToDoListInteractor] Failed to save: \(error.localizedDescription)")
+                        completion()
+                    }
                 }
             case .failure(let error):
+                print("[ToDoListInteractor] API request failed: \(error.localizedDescription)")
                 self?.presenter?.didFailWithError(error)
+                completion()
             }
         }
     }
