@@ -7,8 +7,9 @@
 
 import Foundation
 
-final class ToDoListInteractor: ToDoListInteractorInputProtocol {
-    weak var presenter: ToDoListInteractorOutputProtocol?
+final class ToDoListInteractor: ToDoListInteractorProtocol {
+    
+    weak var presenter: (any ToDoListPresenterProtocol)?
     
     private let coreDataManager: CoreDataManager
     private let apiService: ToDoAPIService
@@ -21,33 +22,17 @@ final class ToDoListInteractor: ToDoListInteractorInputProtocol {
         self.apiService = apiService
     }
     
-    func loadToDos() {
+    func loadToDos(completion: @escaping (Result<[ToDoEntity], Error>) -> Void) {
         checkIfFirstRun()
-        
-        coreDataManager.fetchAllTodos { [weak self] result in
-            switch result {
-            case .success(let todos):
-                self?.presenter?.didLoadToDos(todos)
-            case .failure(let error):
-                self?.presenter?.didFailWithError(error)
-            }
-        }
+        coreDataManager.fetchAllTodos(completion: completion)
     }
     
-    func searchToDos(query: String) {
+    func searchToDos(query: String, completion: @escaping (Result<[ToDoEntity], Error>) -> Void) {
         if query.isEmpty {
-            loadToDos()
+            loadToDos(completion: completion)
             return
         }
-        
-        coreDataManager.searchTodos(query: query) { [weak self] result in
-            switch result {
-            case .success(let todos):
-                self?.presenter?.didSearchToDos(todos)
-            case .failure(let error):
-                self?.presenter?.didFailWithError(error)
-            }
-        }
+        coreDataManager.searchTodos(query: query, completion: completion)
     }
     
     private func checkIfFirstRun() {

@@ -16,6 +16,9 @@ protocol ToDoListPresenterProtocol: ObservableObject {
     
     func viewDidLoad()
     func searchTextDidChange()
+    func didLoadToDos(_ todos: [ToDoEntity])
+    func didSearchToDos(_ todos: [ToDoEntity])
+    func didFailWithError(_ error: Error)
 }
 
 // MARK: - View Protocol
@@ -23,23 +26,18 @@ protocol ToDoListViewProtocol: AnyObject {
     var presenter: (any ToDoListPresenterProtocol)? { get set }
 }
 
-// MARK: - Interactor Output Protocol
-protocol ToDoListInteractorOutputProtocol: AnyObject {
-    func didLoadToDos(_ todos: [ToDoEntity])
-    func didSearchToDos(_ todos: [ToDoEntity])
-    func didFailWithError(_ error: Error)
-}
-
 // MARK: - Interactor Input Protocol
-protocol ToDoListInteractorInputProtocol: AnyObject {
-    var presenter: ToDoListInteractorOutputProtocol? { get set }
-    
-    func loadToDos()
-    func searchToDos(query: String)
+protocol ToDoListInteractorProtocol: AnyObject {
+    func loadToDos(
+        completion: @escaping (Result<[ToDoEntity], Error>) -> Void
+    )
+        
+    func searchToDos(
+        query: String,
+        completion: @escaping (Result<[ToDoEntity], Error>) -> Void
+    )
 }
 
 // MARK: - Router Protocol
-protocol ToDoListRouterProtocol: AnyObject {
-    // Navigation methods will be added later
-}
+protocol ToDoListRouterProtocol: AnyObject {}
 
