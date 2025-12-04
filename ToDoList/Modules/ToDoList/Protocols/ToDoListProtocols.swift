@@ -16,8 +16,10 @@ protocol ToDoListPresenterProtocol: ObservableObject {
     
     func viewDidLoad()
     func searchTextDidChange()
+    func toggleTodoCompleted(_ todo: ToDoEntity)
     func didLoadToDos(_ todos: [ToDoEntity])
     func didSearchToDos(_ todos: [ToDoEntity])
+    func didUpdateTodo(_ todo: ToDoEntity)
     func didFailWithError(_ error: Error)
 }
 
@@ -35,6 +37,11 @@ protocol ToDoListInteractorProtocol: AnyObject {
     func searchToDos(
         query: String,
         completion: @escaping (Result<[ToDoEntity], Error>) -> Void
+    )
+    
+    func toggleTodoCompleted(
+        _ todo: ToDoEntity,
+        completion: @escaping (Result<ToDoEntity, Error>) -> Void
     )
 }
 

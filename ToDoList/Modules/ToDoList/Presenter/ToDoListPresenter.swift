@@ -43,6 +43,17 @@ final class ToDoListPresenter: ToDoListPresenterProtocol, ObservableObject {
         }
     }
     
+    func toggleTodoCompleted(_ todo: ToDoEntity) {
+        interactor?.toggleTodoCompleted(todo) { [weak self] result in
+            switch result {
+            case .success(let updatedTodo):
+                self?.didUpdateTodo(updatedTodo)
+            case .failure(let error):
+                self?.didFailWithError(error)
+            }
+        }
+    }
+    
     func didLoadToDos(_ todos: [ToDoEntity]) {
         self.todos = todos
         self.isLoading = false
@@ -51,6 +62,12 @@ final class ToDoListPresenter: ToDoListPresenterProtocol, ObservableObject {
     func didSearchToDos(_ todos: [ToDoEntity]) {
         self.todos = todos
         self.isLoading = false
+    }
+    
+    func didUpdateTodo(_ todo: ToDoEntity) {
+        if let index = todos.firstIndex(where: { $0.id == todo.id }) {
+            todos[index] = todo
+        }
     }
     
     func didFailWithError(_ error: any Error) {
