@@ -7,15 +7,15 @@
 
 import Foundation
 
+enum NetworkError: Error {
+    case invalidURL
+    case noData
+    case decodingError
+    case serverError(statusCode: Int)
+}
+
 final class NetworkManager {
     // MARK: - NetworkError
-    enum NetworkError: Error {
-        case invalidURL
-        case noData
-        case decodingError
-        case serverError(statusCode: Int)
-    }
-    
     static let shared = NetworkManager()
     private let urlSession: URLSession
     
