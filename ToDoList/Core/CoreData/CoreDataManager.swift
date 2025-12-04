@@ -27,4 +27,65 @@ final class CoreDataManager {
         
         backgroundContext = container.newBackgroundContext()
     }
+    
+    func fetchAllTodos(completion: @escaping (Result<[ToDoEntity], Error>) -> Void) {
+        backgroundContext.perform { [weak self] in
+            guard let self = self else { return }
+            
+            let request = NSFetchRequest<ToDoItem>(entityName: "ToDoItem")
+            request.sortDescriptors = [NSSortDescriptor(key: "createdDate", ascending: false)]
+            
+            do {
+                let items = try self.backgroundContext.fetch(request)
+                let entities = items.compactMap { self.convertToEntity($0) }
+                DispatchQueue.main.async {
+                    completion(.success(entities))
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    completion(.failure(error))
+                }
+            }
+        }
+    }
+    
+    func searchTodos(query: String, completion: @escaping (Result<[ToDoEntity], Error>) -> Void) {
+        backgroundContext.perform { [weak self] in
+            guard let self = self else { return }
+            
+            let request = NSFetchRequest<NSManagedObject>(entityName: "TodoItem")
+            request.predicate = NSPredicate(format: "todo CONTAINS[cd] %@", query)
+            request.sortDescriptors = [NSSortDescriptor(key: "createdDate", ascending: false)]
+            
+            do {
+                let items = try self.backgroundContext.fetch(request)
+                let entities = items.compactMap { self.convertToEntity($0) }
+                DispatchQueue.main.async {
+                    completion(.success(entities))
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    completion(.failure(error))
+                }
+            }
+        }
+    }
+    
+    private func convertToEntity(_ item: NSManagedObject) -> ToDoEntity? {
+        guard let id = item.value(forKey: "id") as? Int32,
+              let todo = item.value(forKey: "todo") as? String,
+              let completed = item.value(forKey: "completed") as? Bool,
+              let userId = item.value(forKey: "userId") as? Int32,
+              let createdDate = item.value(forKey: "createdDate") as? Date else {
+            return nil
+        }
+        
+        return ToDoEntity(
+            id: Int(id),
+            todo: todo,
+            completed: completed,
+            userId: Int(userId),
+            createdDate: createdDate
+        )
+    }
 }
