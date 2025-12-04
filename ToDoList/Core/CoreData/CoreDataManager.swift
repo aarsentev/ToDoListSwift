@@ -97,6 +97,70 @@ final class CoreDataManager {
         }
     }
     
+    // MARK: - Update
+    func updateTodo(_ entity: ToDoEntity, completion: @escaping (Result<ToDoEntity, Error>) -> Void) {
+        backgroundContext.perform { [weak self] in
+            guard let self = self else { return }
+            
+            let request = NSFetchRequest<ToDoItem>(entityName: "ToDoItem")
+            request.predicate = NSPredicate(format: "id == %d", entity.id)
+            
+            do {
+                let items = try self.backgroundContext.fetch(request)
+                guard let item = items.first else {
+                    DispatchQueue.main.async {
+                        completion(.failure(NSError(domain: "CoreData", code: 404, userInfo: [NSLocalizedDescriptionKey: "Todo not found"])))
+                    }
+                    return
+                }
+                
+                item.todo = entity.todo
+                item.completed = entity.completed
+                item.userId = Int32(entity.userId)
+                
+                try self.backgroundContext.save()
+                DispatchQueue.main.async {
+                    completion(.success(entity))
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    completion(.failure(error))
+                }
+            }
+        }
+    }
+    
+    // MARK: - Delete
+    func deleteTodo(id: Int, completion: @escaping (Result<Void, Error>) -> Void) {
+        backgroundContext.perform { [weak self] in
+            guard let self = self else { return }
+            
+            let request = NSFetchRequest<ToDoItem>(entityName: "ToDoItem")
+            request.predicate = NSPredicate(format: "id == %d", id)
+            
+            do {
+                let items = try self.backgroundContext.fetch(request)
+                guard let item = items.first else {
+                    DispatchQueue.main.async {
+                        completion(.failure(NSError(domain: "CoreData", code: 404, userInfo: [NSLocalizedDescriptionKey: "Todo not found"])))
+                    }
+                    return
+                }
+                
+                self.backgroundContext.delete(item)
+                try self.backgroundContext.save()
+                
+                DispatchQueue.main.async {
+                    completion(.success(()))
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    completion(.failure(error))
+                }
+            }
+        }
+    }
+    
     private func convertToEntity(_ item: NSManagedObject) -> ToDoEntity? {
         guard let id = item.value(forKey: "id") as? Int32,
               let todo = item.value(forKey: "todo") as? String,
