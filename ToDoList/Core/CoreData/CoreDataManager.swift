@@ -53,7 +53,7 @@ final class CoreDataManager {
         backgroundContext.perform { [weak self] in
             guard let self = self else { return }
             
-            let request = NSFetchRequest<NSManagedObject>(entityName: "TodoItem")
+            let request = NSFetchRequest<NSManagedObject>(entityName: "ToDoItem")
             request.predicate = NSPredicate(format: "todo CONTAINS[cd] %@", query)
             request.sortDescriptors = [NSSortDescriptor(key: "createdDate", ascending: false)]
             
