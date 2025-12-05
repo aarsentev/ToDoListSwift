@@ -54,5 +54,7 @@ protocol ToDoListInteractorProtocol: AnyObject {
 }
 
 // MARK: - Router Protocol
-protocol ToDoListRouterProtocol: AnyObject {}
+protocol ToDoListRouterProtocol: AnyObject {
+    func navigateToAddEditToDo(todo: ToDoEntity?, onSave: @escaping () -> Void)
+}
 

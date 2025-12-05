@@ -7,6 +7,15 @@
 
 import Foundation
 
-final class ToDoListRouter : ToDoListRouterProtocol {
+enum ToDoListDestination: Hashable {
+    case addEditToDo(todo: ToDoEntity?)
+}
+
+final class ToDoListRouter: ToDoListRouterProtocol {
     
+    var navigationPath: ((ToDoListDestination) -> Void)?
+    
+    func navigateToAddEditToDo(todo: ToDoEntity?, onSave: @escaping () -> Void) {
+        navigationPath?(.addEditToDo(todo: todo))
+    }
 }
