@@ -22,7 +22,7 @@ final class AddEditToDoInteractor: AddEditToDoInteractorProtocol {
     }
     
     func createToDo(text: String, completion: @escaping (Result<ToDoEntity, Error>) -> Void) {
-        let newId = Int(UUID().uuidString)!
+        let newId = Int.random(in: 100000...999999)
         let newTodo = ToDoEntity(
             id: newId,
             todo: text,

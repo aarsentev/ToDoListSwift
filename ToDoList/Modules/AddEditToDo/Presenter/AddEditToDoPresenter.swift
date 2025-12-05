@@ -38,14 +38,14 @@ final class AddEditToDoPresenter: AddEditToDoPresenterProtocol, ObservableObject
         }
     }
     
-    func viewDidLoad() {
-    }
+    func viewDidLoad() {}
     
     func saveToDo() {
         guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            router?.dismiss()
             return
         }
+        
+        guard !isLoading else { return }
         
         isLoading = true
         
@@ -78,7 +78,6 @@ final class AddEditToDoPresenter: AddEditToDoPresenterProtocol, ObservableObject
     func didSaveToDo() {
         isLoading = false
         onSave?()
-        router?.dismiss()
     }
     
     func didFailWithError(_ error: Error) {
