@@ -42,11 +42,11 @@ struct ToDoRowView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(todo.todo)
                         .font(.system(size: 12, weight: .regular))
+                        .lineLimit(2)
                         .strikethrough(todo.completed, color: .gray)
                         .foregroundColor(todo.completed ? .gray : .primary)
                     
                     Text(DateFormatter.todoDateFormatter.string(from: todo.createdDate))
-                        .font(.caption)
                         .font(.system(size: 12, weight: .regular))
                         .foregroundColor(.secondary)
                 }

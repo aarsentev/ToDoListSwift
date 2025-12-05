@@ -9,9 +9,10 @@ import SwiftUI
 
 struct ToDoListView: View {
     @StateObject var presenter: ToDoListPresenter
+    @State private var navigationPath = NavigationPath()
     
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $navigationPath) {
             Group {
                 if presenter.isLoading {
                     ProgressView("Загружаем задачи...")
@@ -30,6 +31,7 @@ struct ToDoListView: View {
                             .listRowSeparator(.visible)
                             .contextMenu {
                                 Button {
+                                    navigationPath.append(ToDoListDestination.addEditToDo(todo: todo))
                                 } label: {
                                     Label("Редактировать", systemImage: "pencil")
                                 }
@@ -70,6 +72,7 @@ struct ToDoListView: View {
                 BottomBarView(
                     count: presenter.todos.count,
                     addAction: {
+                        navigationPath.append(ToDoListDestination.addEditToDo(todo: nil))
                     }
                 )
             }
@@ -83,12 +86,21 @@ struct ToDoListView: View {
             } message: {
                 Text(presenter.errorMessage ?? "")
             }
-        }
-        .onChange(of: presenter.searchText) {
-            presenter.searchTextDidChange()
-        }
-        .onAppear {
-            presenter.viewDidLoad()
+            .navigationDestination(for: ToDoListDestination.self) { destination in
+                switch destination {
+                case .addEditToDo(let todo):
+                    AddEditToDoBuilder.build(todo: todo)
+                }
+            }
+            .onChange(of: presenter.searchText) {
+                presenter.searchTextDidChange()
+            }
+            .onAppear {
+                presenter.viewDidLoad()
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .toDoDidSave)) { _ in
+                presenter.viewDidLoad()
+            }
         }
     }
 }
