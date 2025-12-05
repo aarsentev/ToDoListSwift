@@ -54,6 +54,17 @@ final class ToDoListPresenter: ToDoListPresenterProtocol, ObservableObject {
         }
     }
     
+    func deleteTodo(_ todo: ToDoEntity) {
+        interactor?.deleteTodo(todo) { [weak self] result in
+            switch result {
+            case .success:
+                self?.didDeleteTodo(todo)
+            case .failure(let error):
+                self?.didFailWithError(error)
+            }
+        }
+    }
+    
     func didLoadToDos(_ todos: [ToDoEntity]) {
         self.todos = todos
         self.isLoading = false
@@ -68,6 +79,10 @@ final class ToDoListPresenter: ToDoListPresenterProtocol, ObservableObject {
         if let index = todos.firstIndex(where: { $0.id == todo.id }) {
             todos[index] = todo
         }
+    }
+    
+    func didDeleteTodo(_ todo: ToDoEntity) {
+        todos.removeAll { $0.id == todo.id }
     }
     
     func didFailWithError(_ error: any Error) {

@@ -42,6 +42,10 @@ final class ToDoListInteractor: ToDoListInteractorProtocol {
         coreDataManager.updateTodo(updatedTodo, completion: completion)
     }
     
+    func deleteTodo(_ todo: ToDoEntity, completion: @escaping (Result<Void, Error>) -> Void) {
+        coreDataManager.deleteTodo(id: todo.id, completion: completion)
+    }
+    
     private func checkIfFirstRun(completion: @escaping () -> Void) {
         let defaults = UserDefaults.standard
         let key = AppConfiguration.UserDefaultsKeys.isFirstLaunchCompleted
