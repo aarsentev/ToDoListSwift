@@ -2,7 +2,7 @@
 //  ToDoListTests.swift
 //  ToDoListTests
 //
-//  Created by Alex Arsentev on 2025-12-03.
+//  Created by Alex Arsentev on 2025-12-05.
 //
 
 import XCTest
@@ -10,27 +10,27 @@ import XCTest
 
 final class ToDoListTests: XCTestCase {
 
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+    func testPresenterInitialization() {
+        let presenter = ToDoListPresenter()
+        
+        XCTAssertEqual(presenter.todos.count, 0)
+        XCTAssertFalse(presenter.isLoading)
+        XCTAssertNil(presenter.errorMessage)
     }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+    
+    func testAddEditPresenterInitialization_CreateMode() {
+        let presenter = AddEditToDoPresenter(todo: nil)
+        
+        XCTAssertEqual(presenter.title, "Новая задача")
+        XCTAssertEqual(presenter.text, "")
     }
-
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
+    
+    func testAddEditPresenterInitialization_EditMode() {
+        let todo = ToDoEntity(id: 1, todo: "Test task", completed: false)
+        
+        let presenter = AddEditToDoPresenter(todo: todo)
+        
+        XCTAssertEqual(presenter.title, "Задача 1")
+        XCTAssertEqual(presenter.text, "Test task")
     }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
-    }
-
 }
