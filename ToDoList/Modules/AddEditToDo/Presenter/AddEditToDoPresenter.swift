@@ -51,9 +51,21 @@ final class AddEditToDoPresenter: AddEditToDoPresenterProtocol, ObservableObject
         if let existingTodo = todo {
             var updatedTodo = existingTodo
             updatedTodo.todo = text
-            interactor?.saveToDo(updatedTodo) { _ in }
-        } else {
-            interactor?.createToDo(text: text) { _ in }
+            interactor?.saveToDo(updatedTodo) { [weak self] result in
+                self?.isLoading = false
+                if case .success = result {
+                    NotificationCenter.default.post(name: .toDoDidSave, object: nil)
+                }
+            }
+        }
+        // Add mode
+        else {
+            interactor?.createToDo(text: text) { [weak self] result in
+                self?.isLoading = false
+                if case .success = result {
+                    NotificationCenter.default.post(name: .toDoDidSave, object: nil)
+                }
+            }
         }
     }
     
