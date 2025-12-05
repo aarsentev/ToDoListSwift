@@ -8,12 +8,6 @@
 import Foundation
 
 final class AddEditToDoRouter: AddEditToDoRouterProtocol {
-    
     weak var presenter: (any AddEditToDoPresenterProtocol)?
-    var dismissAction: (() -> Void)?
-    
-    func dismiss() {
-        dismissAction?()
-    }
 }
 

@@ -35,8 +35,5 @@ protocol AddEditToDoInteractorProtocol: AnyObject {
 }
 
 // MARK: - Router Protocol
-protocol AddEditToDoRouterProtocol: AnyObject {
-    var dismissAction: (() -> Void)? { get set }
-    func dismiss()
-}
+protocol AddEditToDoRouterProtocol: AnyObject {}
 

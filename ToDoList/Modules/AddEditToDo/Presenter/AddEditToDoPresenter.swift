@@ -20,12 +20,10 @@ final class AddEditToDoPresenter: AddEditToDoPresenterProtocol, ObservableObject
     
     private let todo: ToDoEntity?
     private let isEditMode: Bool
-    private var onSave: (() -> Void)?
     
-    init(todo: ToDoEntity?, onSave: (() -> Void)? = nil) {
+    init(todo: ToDoEntity?) {
         self.todo = todo
         self.isEditMode = todo != nil
-        self.onSave = onSave
         
         if let todo = todo {
             self.title = "Задача \(todo.id)"
@@ -53,31 +51,14 @@ final class AddEditToDoPresenter: AddEditToDoPresenterProtocol, ObservableObject
         if let existingTodo = todo {
             var updatedTodo = existingTodo
             updatedTodo.todo = text
-            
-            interactor?.saveToDo(updatedTodo) { [weak self] result in
-                switch result {
-                case .success:
-                    self?.didSaveToDo()
-                case .failure(let error):
-                    self?.didFailWithError(error)
-                }
-            }
+            interactor?.saveToDo(updatedTodo) { _ in }
         } else {
-            // Add mode
-            interactor?.createToDo(text: text) { [weak self] result in
-                switch result {
-                case .success:
-                    self?.didSaveToDo()
-                case .failure(let error):
-                    self?.didFailWithError(error)
-                }
-            }
+            interactor?.createToDo(text: text) { _ in }
         }
     }
     
     func didSaveToDo() {
         isLoading = false
-        onSave?()
     }
     
     func didFailWithError(_ error: Error) {
