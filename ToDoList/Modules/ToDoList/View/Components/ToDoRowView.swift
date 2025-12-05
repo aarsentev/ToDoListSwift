@@ -12,12 +12,6 @@ struct ToDoRowView: View {
     let onToggleCompleted: () -> Void
     var showCompletionButton: Bool = true
     
-    private static let dateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "dd/MM/yy"
-        return formatter
-    }()
-    
     var body: some View {
         HStack(spacing: 12) {
             if showCompletionButton {
@@ -51,7 +45,7 @@ struct ToDoRowView: View {
                         .strikethrough(todo.completed, color: .gray)
                         .foregroundColor(todo.completed ? .gray : .primary)
                     
-                    Text(Self.dateFormatter.string(from: todo.createdDate))
+                    Text(DateFormatter.todoDateFormatter.string(from: todo.createdDate))
                         .font(.caption)
                         .font(.system(size: 12, weight: .regular))
                         .foregroundColor(.secondary)
