@@ -10,6 +10,7 @@ import SwiftUI
 struct ToDoRowView: View {
     let todo: ToDoEntity
     let onToggleCompleted: () -> Void
+    var showCompletionButton: Bool = true
     
     private static let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -19,23 +20,24 @@ struct ToDoRowView: View {
     
     var body: some View {
         HStack(spacing: 12) {
-            Button(action: onToggleCompleted) {
-                ZStack {
+            if showCompletionButton {
+                Button(action: onToggleCompleted) {
                     Circle()
                         .strokeBorder(
                             todo.completed ? Color.yellow : Color.gray.opacity(0.6),
                             lineWidth: 2
                         )
                         .frame(width: 26, height: 26)
-                    
-                    if todo.completed {
-                        Image(systemName: "checkmark")
-                            .font(.system(size: 13, weight: .bold))
-                            .foregroundColor(.yellow)
-                    }
+                        .overlay {
+                            if todo.completed {
+                                Image(systemName: "checkmark")
+                                    .font(.system(size: 13, weight: .bold))
+                                    .foregroundColor(.yellow)
+                            }
+                        }
                 }
+                .buttonStyle(.plain)
             }
-            .buttonStyle(.plain)
             
             VStack(alignment: .leading, spacing: 4) {
                 Text("Задача \(todo.id)")
@@ -57,7 +59,10 @@ struct ToDoRowView: View {
             }
             Spacer()
         }
-        .padding(.vertical, 4)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .frame(maxWidth: .infinity)
+        .background(Color(.systemBackground))
     }
 }
 
@@ -66,7 +71,7 @@ struct ToDoRowView: View {
         todo: ToDoEntity(
             id: 1,
             todo: "Test task",
-            completed: false,
+            completed: true,
             userId: 123
         ),
         onToggleCompleted: {}

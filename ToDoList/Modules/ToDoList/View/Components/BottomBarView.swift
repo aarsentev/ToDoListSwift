@@ -20,24 +20,23 @@ struct BottomBarView: View {
                 .foregroundColor(.secondary)
             
             Spacer()
-            
-            Button(action: addAction) {
-                Image(systemName: "square.and.pencil")
-                    .font(.title2)
-                    .foregroundColor(.yellow)
-                    .padding(.horizontal, 4)
-            }
         }
+        .overlay(
+            HStack {
+                Spacer()
+                Button(action: addAction) {
+                    Image(systemName: "square.and.pencil")
+                        .font(.title2)
+                        .foregroundColor(.yellow)
+                        .padding(.horizontal, 4)
+                }
+            }
+        )
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
         .background(
             Color(.systemGray6)
                 .ignoresSafeArea(edges: .bottom)
-        )
-        .overlay(
-            Divider()
-                .background(Color(.separator)),
-            alignment: .top
         )
     }
 }
